@@ -2,17 +2,23 @@
 #-----import statements-----
 import turtle
 import random as rand
+import leaderboard as lb
 #-----game configuration----
 score = 0
 shape = "square"
 color = "blue"
 size = 3
 font_setup = ("Arial", 20, "normal")
-timer = 30
+timer = 5
 counter_interval = 1000
 timer_up = False
 colors = ["red","pink","orange","purple"]
 sizes = [5,4,3,2,1,0.5]
+# leaderboard variables
+leaderboard_file_name = "a122_leaderboard.txt"
+leader_names_list = []
+leader_scores_list = []
+player_name = input ("Please enter your name:")
 #-----initialize turtle-----
 squaro = turtle.Turtle()
 score_writer = turtle.Turtle()
@@ -38,6 +44,7 @@ def countdown():
   if timer <= 0:
     counter.write("Time's Up", font=font_setup)
     timer_up = True
+    manage_leaderboard()
   else:
     counter.write("Timer: " + str(timer), font=font_setup)
     timer -= 1
@@ -68,7 +75,25 @@ def squaro_clicked(x,y):
     change_size()
   else:
     squaro.hideturtle()
+# manages the leaderboard for top 5 scorers
+def manage_leaderboard():
   
+  global leader_scores_list
+  global leader_names_list
+  global score
+  global spot
+
+  # load all the leaderboard records into the lists
+  lb.load_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list)
+
+  # TODO
+  if (len(leader_scores_list) < 5 or score > leader_scores_list[4]):
+    lb.update_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list, player_name, score)
+    lb.draw_leaderboard(leader_names_list, leader_scores_list, True, squaro, score)
+
+  else:
+    lb.draw_leaderboard(leader_names_list, leader_scores_list, False, squaro, score)
+
 #-----events----------------
 squaro.onclick(squaro_clicked)
 wn = turtle.Screen()
